@@ -1,0 +1,94 @@
+{
+  "name": "uncanny-cognitive-complexity",
+  "displayName": "Uncanny Cognitive Complexity",
+  "description": "See how Mr. Incredible gets more and more uncanny as the cognitive complexity of your code grows.",
+  "version": "1.0.0",
+  "publisher": "Dabolus",
+  "homepage": "https://github.com/Dabolus",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dabolus/uncanny-cognitive-complexity"
+  },
+  "engines": {
+    "vscode": "^1.61.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "icon": "assets/icon.jpg",
+  "galleryBanner": {
+    "color": "#191919",
+    "theme": "dark"
+  },
+  "keywords": [
+    "uncanny",
+    "incredible",
+    "mr incredible",
+    "complexity",
+    "code complexity",
+    "cognitive complexity",
+    "visualization"
+  ],
+  "activationEvents": [
+    "onCommand:uncanny-cognitive-complexity.openview.focus",
+    "onView:uncanny-cognitive-complexity.openview"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "uncanny-cognitive-complexity",
+          "title": "Uncanny Cognitive Complexity",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "uncanny-cognitive-complexity": [
+        {
+          "type": "webview",
+          "id": "uncanny-cognitive-complexity.openview",
+          "name": "Uncanny Cognitive Complexity",
+          "contextualTitle": "Uncanny Cognitive Complexity"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "uncanny-cognitive-complexity.openview.focus",
+        "category": "Uncanny Cognitive Complexity",
+        "title": "Open",
+        "icon": "$(clear-all)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild src/extension.ts --bundle --minify --sourcemap --platform=node --target=node16 --format=cjs --outfile=dist/extension.js --external:vscode",
+    "watch": "esbuild src/extension.ts --watch --sourcemap --platform=node --target=node16 --format=cjs --outfile=dist/extension.js",
+    "pretest": "npm run build && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./dist/test/runTest.js",
+    "publish-ext": "vsce publish"
+  },
+  "dependencies": {
+    "cognitive-complexity-ts": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.61.0",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "@vscode/test-electron": "^1.6.2",
+    "esbuild": "^0.14.43",
+    "eslint": "^7.32.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.1",
+    "typescript": "^4.4.3",
+    "vsce": "^2.9.1"
+  }
+}
