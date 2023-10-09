@@ -61,12 +61,11 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run build",
+    "vscode:prepublish": "yarn build",
     "build": "esbuild src/extension.ts --bundle --minify --sourcemap --platform=node --target=node16 --format=cjs --outfile=dist/extension.js --external:vscode",
     "watch": "esbuild src/extension.ts --watch --sourcemap --platform=node --target=node16 --format=cjs --outfile=dist/extension.js",
-    "pretest": "npm run build && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./dist/test/runTest.js",
+    "test": "yarn build && yarn lint && node ./dist/test/runTest.js",
     "publish-ext": "vsce publish"
   },
   "dependencies": {
