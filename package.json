@@ -11,7 +11,7 @@
     "url": "https://github.com/Dabolus/uncanny-cognitive-complexity"
   },
   "engines": {
-    "vscode": "^1.61.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Visualization"
@@ -29,10 +29,6 @@
     "code complexity",
     "cognitive complexity",
     "visualization"
-  ],
-  "activationEvents": [
-    "onCommand:uncanny-cognitive-complexity.openview.focus",
-    "onView:uncanny-cognitive-complexity.openview"
   ],
   "main": "./dist/extension.js",
   "contributes": {
