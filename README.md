@@ -3,6 +3,8 @@
 Uncanny Cognitive Complexity is a VS Code extension that shows Mr. Incredible
 getting more and more uncanny as the cognitive complexity of your code grows.
 
+![Uncanny Cognitive Complexity in action](https://raw.githubusercontent.com/Dabolus/uncanny-cognitive-complexity/main/preview.gif)
+
 ## Credits
 
 - [Virej Dasani](https://virejdasani.github.io/) for the idea. They made the
