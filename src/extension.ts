@@ -158,12 +158,7 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   private async getCognitiveComplexity(
     document = vscode.window.activeTextEditor?.document,
   ): Promise<number> {
-    if (
-      !document ||
-      // Only TS and JS files are supported
-      (document.languageId !== 'typescript' &&
-        document.languageId !== 'javascript')
-    ) {
+    if (!document) {
       return 0;
     }
 
