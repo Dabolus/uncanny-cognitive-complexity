@@ -3,6 +3,10 @@
 Uncanny Cognitive Complexity is a VS Code extension that shows Mr. Incredible
 getting more and more uncanny as the cognitive complexity of your code grows.
 
+It works best with TypeScript and JavaScript as it does an AST analysis of the
+code to compute the correct cognitive complexity, but it also works with any
+other language by using simple heuristics to estimate the complexity of the code.
+
 ![Uncanny Cognitive Complexity in action](https://raw.githubusercontent.com/Dabolus/uncanny-cognitive-complexity/main/preview.gif)
 
 ## Credits
