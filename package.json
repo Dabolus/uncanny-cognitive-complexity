@@ -66,14 +66,16 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
+    "prebuild": "mkdir -p dist && cp node_modules/complexity-wasm/complexity_bg.wasm dist/",
     "build": "esbuild src/extension.ts --bundle --minify --sourcemap --platform=node --target=node18 --format=cjs --outfile=dist/extension.js --external:vscode",
-    "watch": "esbuild src/extension.ts --watch --sourcemap --platform=node --target=node18 --format=cjs --outfile=dist/extension.js",
+    "watch": "npm run build -- --watch",
     "lint": "eslint src --ext ts",
     "test": "npm run build && npm run lint && node ./dist/test/runTest.js",
     "publish-ext": "vsce publish"
   },
   "dependencies": {
-    "cognitive-complexity-ts": "^0.6.5"
+    "cognitive-complexity-ts": "^0.6.5",
+    "complexity-wasm": "^0.4.2"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

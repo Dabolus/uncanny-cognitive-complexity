@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 import { getSourceOutput } from 'cognitive-complexity-ts';
+import initComplexityWasm, {
+  InitOutput,
+  computeComplexity,
+} from 'complexity-wasm';
 
 /**
  * An helper function that takes a function and a time (in ms) as parameters,
@@ -25,6 +29,12 @@ export const debounce = <F extends (...args: any[]) => any>(
     });
 };
 
+export const enum ComplexityComputationMethod {
+  AST = 'ast',
+  INDENTATION = 'indentation',
+  LENGTH = 'length',
+}
+
 // This method is called when the extension is activated
 // An extension is activated the very first time a command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -43,8 +53,15 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
 
   private _totalPhasesPromise: Thenable<number>;
   private _view?: vscode.WebviewView;
+  private _loggerChannel: vscode.LogOutputChannel;
+  private _complexityInitPromise: Promise<InitOutput>;
 
   constructor(private readonly _extensionUri: vscode.Uri) {
+    this._loggerChannel = vscode.window.createOutputChannel(
+      'Uncanny Cognitive Complexity',
+      { log: true },
+    );
+    this._complexityInitPromise = this.initComplexity();
     const debouncedUpdateContent = debounce(
       (
         event:
@@ -76,6 +93,17 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     vscode.workspace.onDidChangeTextDocument(debouncedUpdateContent);
   }
 
+  async initComplexity() {
+    const wasmPath = vscode.Uri.joinPath(
+      this._extensionUri,
+      'dist',
+      'complexity_bg.wasm',
+    );
+    const wasmContent = await vscode.workspace.fs.readFile(wasmPath);
+    const initResult = await initComplexityWasm(wasmContent);
+    return initResult;
+  }
+
   resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
     webviewView.webview.options = {
       // Allow scripts in the webview
@@ -90,17 +118,42 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   }
 
   private async updateContent(
-    document = vscode.window.activeTextEditor?.document,
+    document: vscode.TextDocument | undefined = vscode.window.activeTextEditor
+      ?.document,
   ) {
     if (!this._view) {
+      this._loggerChannel.info('Webview not ready. Skipping.');
       return;
     }
 
-    const complexity = await this.getCognitiveComplexity(document);
-    this._view.webview.html = await this.getHtmlContent(
-      this._view.webview,
-      complexity,
-    );
+    if (!document) {
+      this._loggerChannel.info('No document found. Skipping.');
+      return;
+    }
+
+    if (
+      document?.languageId === 'log' ||
+      document?.languageId === 'plaintext'
+    ) {
+      this._loggerChannel.info(
+        `Ignoring document with languageId ${document.languageId}.`,
+      );
+      return;
+    }
+
+    try {
+      const complexity = await this.getCognitiveComplexity(document);
+      this._view.webview.html = await this.getHtmlContent(
+        this._view.webview,
+        complexity,
+      );
+    } catch (error) {
+      this._loggerChannel.error(
+        `Unable to compute complexity: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
+    }
   }
 
   private async getHtmlContent(
@@ -155,15 +208,54 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     `;
   }
 
+  private getComplexityComputationMethod(
+    languageId: string,
+    text: string,
+  ): ComplexityComputationMethod {
+    if (languageId === 'typescript' || languageId === 'javascript') {
+      return ComplexityComputationMethod.AST;
+    }
+    // Use indentation for source code that contains indentation, otherwise use length
+    return /^[\t ]+/m.test(text)
+      ? ComplexityComputationMethod.INDENTATION
+      : ComplexityComputationMethod.LENGTH;
+  }
+
   private async getCognitiveComplexity(
-    document = vscode.window.activeTextEditor?.document,
+    document: vscode.TextDocument,
   ): Promise<number> {
-    if (!document) {
-      return 0;
+    const languageId = document.languageId;
+    const text = document.getText();
+
+    const computationMethod = this.getComplexityComputationMethod(
+      languageId,
+      text,
+    );
+
+    this._loggerChannel.info(
+      `Computing complexity for ${languageId} using ${computationMethod} method.`,
+    );
+
+    if (computationMethod === ComplexityComputationMethod.AST) {
+      this._loggerChannel.info('Calling cognitive-complexity-ts.');
+      const { score } = getSourceOutput(text);
+      this._loggerChannel.info(`Done. Complexity is ${score}.`);
+      return score;
     }
 
-    const { score: complexity } = getSourceOutput(document.getText());
+    await this._complexityInitPromise;
 
-    return complexity;
+    const algorithm =
+      computationMethod === ComplexityComputationMethod.INDENTATION
+        ? 'standard'
+        : 'length';
+
+    this._loggerChannel.info(
+      `Calling complexity-wasm with ${algorithm} as algorithm.`,
+    );
+    const out = Math.round(computeComplexity(text, algorithm));
+
+    this._loggerChannel.info(`Done. Complexity is ${out}.`);
+    return out;
   }
 }
