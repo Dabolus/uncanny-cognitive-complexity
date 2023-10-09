@@ -62,7 +62,7 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn build",
-    "build": "esbuild src/extension.ts --bundle --minify --sourcemap --platform=node --target=node18 --format=cjs --outfile=dist/extension.js --external:vscode",
+    "build": "esbuild src/extension.ts --bundle --minify --sourcemap --platform=node --target=node18 --format=cjs --outfile=dist/extension.js --external:vscode --external:cognitive-complexity-ts",
     "watch": "esbuild src/extension.ts --watch --sourcemap --platform=node --target=node18 --format=cjs --outfile=dist/extension.js",
     "lint": "eslint src --ext ts",
     "test": "yarn build && yarn lint && node ./dist/test/runTest.js",
