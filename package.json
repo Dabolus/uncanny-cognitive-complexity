@@ -86,5 +86,6 @@
     "mocha": "^9.1.1",
     "typescript": "^4.4.3",
     "vsce": "^2.9.1"
-  }
+  },
+  "packageManager": "yarn@3.6.4"
 }
