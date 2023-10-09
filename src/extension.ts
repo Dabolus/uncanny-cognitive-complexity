@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getFileOutput } from 'cognitive-complexity-ts';
+import { getSourceOutput } from 'cognitive-complexity-ts';
 
 /**
  * An helper function that takes a function and a time (in ms) as parameters,
@@ -45,7 +45,19 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
 
   constructor(private readonly _extensionUri: vscode.Uri) {
-    const debouncedUpdateContent = debounce(() => this.updateContent(), 200);
+    const debouncedUpdateContent = debounce(
+      (
+        event:
+          | vscode.TextEditor
+          | vscode.TextDocument
+          | vscode.TextDocumentChangeEvent
+          | undefined,
+      ) =>
+        this.updateContent(
+          event && 'document' in event ? event.document : event,
+        ),
+      200,
+    );
     const facesDir = vscode.Uri.joinPath(
       this._extensionUri,
       'assets',
@@ -77,12 +89,14 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     this.updateContent();
   }
 
-  private async updateContent() {
+  private async updateContent(
+    document = vscode.window.activeTextEditor?.document,
+  ) {
     if (!this._view) {
       return;
     }
 
-    const complexity = await this.getCognitiveComplexity();
+    const complexity = await this.getCognitiveComplexity(document);
     this._view.webview.html = await this.getHtmlContent(
       this._view.webview,
       complexity,
@@ -141,19 +155,19 @@ class CustomSidebarViewProvider implements vscode.WebviewViewProvider {
     `;
   }
 
-  private async getCognitiveComplexity(): Promise<number> {
-    const document = vscode.window.activeTextEditor?.document;
-
-    if (!document) {
+  private async getCognitiveComplexity(
+    document = vscode.window.activeTextEditor?.document,
+  ): Promise<number> {
+    if (
+      !document ||
+      // Only TS and JS files are supported
+      (document.languageId !== 'typescript' &&
+        document.languageId !== 'javascript')
+    ) {
       return 0;
     }
 
-    // Only process "file://" URIs.
-    if (document.uri.scheme !== 'file') {
-      return 0;
-    }
-
-    const { score: complexity } = await getFileOutput(document.fileName);
+    const { score: complexity } = getSourceOutput(document.getText());
 
     return complexity;
   }
