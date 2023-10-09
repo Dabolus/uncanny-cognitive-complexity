@@ -60,6 +60,10 @@
       }
     ]
   },
+  "pricing": "Free",
+  "sponsor": {
+    "url": "https://github.com/sponsors/Dabolus"
+  },
   "scripts": {
     "vscode:prepublish": "npm run build",
     "build": "esbuild src/extension.ts --bundle --minify --sourcemap --platform=node --target=node18 --format=cjs --outfile=dist/extension.js --external:vscode --external:cognitive-complexity-ts",
