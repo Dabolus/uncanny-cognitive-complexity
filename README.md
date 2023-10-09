@@ -12,6 +12,9 @@ getting more and more uncanny as the cognitive complexity of your code grows.
 - [Thomas Richards](https://thomasrichards.dev/) for their [cognitive-complexity-ts](https://www.npmjs.com/package/cognitive-complexity-ts)
   library, which is the one used by this extension under the hood to compute
   the cognitive complexity of the code;
+- [Joshua Clayton](https://joshuaclayton.me/) for their [complexity](https://github.com/thoughtbot/complexity)
+  tool, which I compiled to WebAssembly and used to estimate the cognitive
+  complexity of files other than TypeScript and JavaScript;
 - [Myself](https://giorgio.garasto.me/) for the sidebar icon. It literally took
   me more time to design it than it took me to develop the extension itself.
   Hope you will appreciate it.
