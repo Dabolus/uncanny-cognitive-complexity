@@ -79,12 +79,12 @@
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "@vscode/test-electron": "^2.3.5",
+    "@vscode/vsce": "^2.21.1",
     "esbuild": "^0.19.4",
     "eslint": "^8.51.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
-    "typescript": "^5.2.2",
-    "vsce": "^2.15.0"
+    "typescript": "^5.2.2"
   },
   "packageManager": "yarn@3.6.4"
 }
